@@ -7,12 +7,27 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
+    <div>
+        <div class="word-input-holder">
+            <form id="form-submit">
+                <input type="text" id="word-input" placeholder="Word here">
+                <input type="text" id="translation-input" placeholder="What does your word mean?">
+                <button id="word-submit" type="submit">Add word</button>
+            </form>
+        </div>
+    </div>
     <div id="typer-holder" style="display: flex;"></div>
     <div id="translation-holder">
         <h5>Translation: <span id="translation"></span></h5>
     </div>
     <div id="score-holder">
         <h4>Words written: <span id="score">0</span></h4>
+    </div>
+    <button id="start-button">Start typing!</button>
+    <button id="reset">Reset</button>
+    <div id="chosen-words">
+        <h4>Words chosen:</h4>
+        <p id="chosen-words-list">No words selected</p>
     </div>
 </body>
 <script src="./main.js"></script>

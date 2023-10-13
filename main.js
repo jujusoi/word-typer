@@ -1,35 +1,27 @@
+const formSbmt = document.querySelector('#form-submit');
+let wordArray = [];
 
-const words = [ {
-    word: 'cappello',
-    translation: 'hat',
-}, {
-    word: 'zaino',
-    translation: 'backpack',
-}, {
-    word: 'specchio',
-    translation: 'mirror',
-}, {
-    word: 'scontrino',
-    translation: 'receipt',
-}, {
-    word: 'maglione',
-    translation: 'sweater',
-}, {
-    word: 'camicia',
-    translation: 'shirt',
-}, {
-    word: 'io ho bisogno di',
-    translation: 'i need',
-}, {
-    word: 'cento',
-    translation: 'one hundred',
-}, {
-    word: 'cinquanta',
-    translation: 'fifty',
-}, {
-    word: 'dieci',
-    translation: 'ten',
-}];
+formSbmt.addEventListener('submit', function(event) {
+    event.preventDefault();
+    const wordValue = document.querySelector('#word-input').value.trim();
+    const translationValue = document.querySelector('#translation-input').value.trim();
+    if (wordValue && translationValue) {
+        const obj = {
+            word: wordValue,
+            translation: translationValue
+        };
+        wordArray.push(obj);
+        updateChosenList(wordArray.map((object) => object.word));
+        clearForm();
+        document.querySelector('#word-input').focus();
+    };
+});
+
+const clearForm = () => {
+    document.querySelector('#word-input').value = '';
+    document.querySelector('#translation-input').value = '';
+};
+
 let score = 0;
 
 const selectRandomWord = (wordArray) => {
@@ -57,27 +49,29 @@ const updateTyper = (obj) => {
 };
 
 window.addEventListener('keydown', (event) => {
-    const holder = document.querySelector('#typer-holder');
-    const childrenCount = holder.childElementCount;
-
-    const key = event.key;
-    let active = document.querySelector('.letter-active').textContent.toLowerCase();
-
-    const indexOfActiveResult = indexOfActive(childrenCount, holder);
-
-    if (key === active) {
-        document.querySelector('.letter-active').classList.remove('letter-active');
-        changeWordColor(holder.children[indexOfActiveResult]);
-        if (indexOfActiveResult == childrenCount - 1) {
-            setTimeout(() => {
-                updateTyper(selectRandomWord(words));
-                updateScore(score++);
-            }, 500)
-        } else {
-            active = holder.children[indexOfActiveResult + 1];
-            active.classList.add('letter-active');
-        }
-    };
+    if (document.querySelector('.letter-active')) {
+        const holder = document.querySelector('#typer-holder');
+        const childrenCount = holder.childElementCount;
+    
+        const key = event.key;
+        let active = document.querySelector('.letter-active').textContent.toLowerCase();
+    
+        const indexOfActiveResult = indexOfActive(childrenCount, holder);
+    
+        if (key === active) {
+            document.querySelector('.letter-active').classList.remove('letter-active');
+            changeWordColor(holder.children[indexOfActiveResult]);
+            if (indexOfActiveResult == childrenCount - 1) {
+                setTimeout(() => {
+                    updateTyper(selectRandomWord(wordArray));
+                    updateScore(score++);
+                }, 500)
+            } else {
+                active = holder.children[indexOfActiveResult + 1];
+                active.classList.add('letter-active');
+            }
+        };
+    }
 });
 
 const indexOfActive = (childcount, holder) => {
@@ -98,4 +92,21 @@ const updateScore = (score) => {
     document.querySelector('#score').textContent = score;
 };
 
-updateTyper(selectRandomWord(words));
+const updateChosenList = (arr) => {
+    if (arr.length === 0) {
+        document.querySelector('#chosen-words-list').textContent = 'No words selected';
+    } else {
+        document.querySelector('#chosen-words-list').textContent = arr.join(', ');
+    }
+};
+
+document.querySelector('#reset').addEventListener('click', function(event) {
+    wordArray = [];
+    document.querySelector('#typer-holder').innerHTML = '', document.querySelector('#translation').innerHTML = '';
+    updateChosenList(wordArray.map((object) => object.word));
+    updateScore(0);
+});
+
+document.querySelector('#start-button').addEventListener('click', function(event) {
+    updateTyper(selectRandomWord(wordArray))
+});

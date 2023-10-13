@@ -20,6 +20,15 @@ const words = [ {
 }, {
     word: 'io ho bisogno di',
     translation: 'i need',
+}, {
+    word: 'cento',
+    translation: 'one hundred',
+}, {
+    word: 'cinquanta',
+    translation: 'fifty',
+}, {
+    word: 'dieci',
+    translation: 'ten',
 }];
 let score = 0;
 

@@ -100,6 +100,70 @@ const updateChosenList = (arr) => {
     }
 };
 
+const makeElements = () => {
+    const selectionDiv = document.createElement('div');
+    selectionDiv.classList.add('individual-save');
+    const selectionh5 = document.createElement('h5');
+    selectionh5.classList.add('selection-name');
+    const selectionh5Span = document.createElement('span');
+    selectionh5Span.classList.add('selection-name-num');
+    const selectioncontent = document.createElement('p');
+    selectioncontent.classList.add('saved-selection-word');
+    const obj = {
+        selectionDiv,
+        selectionh5,
+        selectionh5Span,
+        selectioncontent
+    };
+    return obj;
+};
+const appendElements = (selectionDiv, selectionh5, selectionh5Span, selectioncontent) => {
+    selectionh5.appendChild(selectionh5Span);
+    selectionDiv.appendChild(selectionh5);
+    selectionDiv.appendChild(selectioncontent);
+    document.querySelector('#saved-selection').appendChild(selectionDiv);
+};
+
+const renderSelections = (res) => {
+    const storageItems = JSON.parse(window.localStorage.getItem('savedSelections')) || [];
+    if (res === 'one') {
+        const { selectionDiv, selectionh5, selectionh5Span, selectioncontent } = makeElements();
+
+        selectionh5.textContent = 'Selection '
+        selectionh5Span.textContent = `${storageItems.length}:`;
+        const content = storageItems[storageItems.length - 1].map((object) => object.word);
+        selectioncontent.textContent = content.join(', ');
+
+        appendElements(selectionDiv, selectionh5, selectionh5Span, selectioncontent);
+    } else {
+        for (let i = 0; i < storageItems.length; i++) {
+
+            const { selectionDiv, selectionh5, selectionh5Span, selectioncontent } = makeElements();
+            
+            selectionh5.textContent = 'Selection '
+            selectionh5Span.textContent = `${i + 1}:`;
+            const content = storageItems[i].map((object) => object.word);
+            selectioncontent.textContent = content.join(', ');
+
+            appendElements(selectionDiv, selectionh5, selectionh5Span, selectioncontent);    
+        };
+    };
+};
+
+document.querySelector('#save-selection-button').addEventListener('click', function(event) {
+    const storageItems = window.localStorage.getItem('savedSelections') || [];
+    if (storageItems.length > 0) {
+        const parsedStorageItems = JSON.parse(storageItems);
+        parsedStorageItems.push(wordArray);
+        console.log(parsedStorageItems);
+        window.localStorage.setItem('savedSelections', JSON.stringify(parsedStorageItems));
+    } else {
+        storageItems.push(wordArray);
+        window.localStorage.setItem('savedSelections', JSON.stringify(storageItems));
+    };
+    renderSelections('one');
+});
+
 document.querySelector('#reset').addEventListener('click', function(event) {
     wordArray = [];
     document.querySelector('#typer-holder').innerHTML = '', document.querySelector('#translation').innerHTML = '';
@@ -110,3 +174,5 @@ document.querySelector('#reset').addEventListener('click', function(event) {
 document.querySelector('#start-button').addEventListener('click', function(event) {
     updateTyper(selectRandomWord(wordArray))
 });
+
+renderSelections('all');

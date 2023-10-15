@@ -64,7 +64,7 @@ window.addEventListener('keydown', (event) => {
             if (indexOfActiveResult == childrenCount - 1) {
                 setTimeout(() => {
                     updateTyper(selectRandomWord(wordArray));
-                    updateScore(score++);
+                    updateScore(score = score + 1);
                 }, 500)
             } else {
                 active = holder.children[indexOfActiveResult + 1];
@@ -183,6 +183,10 @@ const renderSelections = (res) => {
     };
 };
 
+const resetScore = () => {
+    score = 0;
+};
+
 document.querySelector('#save-selection-button').addEventListener('click', function(event) {
     const storageItems = window.localStorage.getItem('savedSelections') || [];
     if (storageItems.length > 0) {
@@ -201,6 +205,7 @@ document.querySelector('#reset').addEventListener('click', function(event) {
     wordArray = [];
     document.querySelector('#typer-holder').innerHTML = '', document.querySelector('#translation').innerHTML = '';
     updateChosenList(wordArray.map((object) => object.word));
+    resetScore();
     updateScore(0);
 });
 

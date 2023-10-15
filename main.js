@@ -100,26 +100,55 @@ const updateChosenList = (arr) => {
     }
 };
 
-const makeElements = () => {
+const makeElements = (index) => {
     const selectionDiv = document.createElement('div');
     selectionDiv.classList.add('individual-save');
+    const selectionh5Div = document.createElement('div');
+    selectionh5Div.classList.add('selection-main-div');
     const selectionh5 = document.createElement('h5');
     selectionh5.classList.add('selection-name');
     const selectionh5Span = document.createElement('span');
     selectionh5Span.classList.add('selection-name-num');
     const selectioncontent = document.createElement('p');
     selectioncontent.classList.add('saved-selection-word');
+    const selectionButton = document.createElement('button');
+    selectionButton.classList.add('selection-button');
+    selectionButton.setAttribute('data-id', index);
+    const deleteButton = document.createElement('button');
+    deleteButton.classList.add('delete-button');
+
+    selectionButton.addEventListener('click', function(event) {
+        const storageItems = JSON.parse(window.localStorage.getItem('savedSelections'));
+        const items = storageItems[selectionButton.getAttribute('data-id')];
+        wordArray = items;
+        updateChosenList(wordArray.map((object) => object.word));
+    });
+
+    deleteButton.addEventListener('click', function(event) {
+        const storageItems = JSON.parse(window.localStorage.getItem('savedSelections'));
+        storageItems.splice(selectionButton.getAttribute('data-id'), 1);
+        window.localStorage.setItem('savedSelections', JSON.stringify(storageItems));
+        document.querySelector('#saved-selection').innerHTML = '';
+        renderSelections('all');
+    });
+
     const obj = {
         selectionDiv,
+        selectionh5Div,
         selectionh5,
         selectionh5Span,
-        selectioncontent
+        selectioncontent,
+        selectionButton,
+        deleteButton
     };
     return obj;
 };
-const appendElements = (selectionDiv, selectionh5, selectionh5Span, selectioncontent) => {
+const appendElements = (selectionDiv, selectionh5, selectionh5Span, selectioncontent, selectionButton, selectionh5Div, deleteButton) => {
     selectionh5.appendChild(selectionh5Span);
-    selectionDiv.appendChild(selectionh5);
+    selectionh5Div.appendChild(selectionh5);
+    selectionh5Div.appendChild(selectionButton);
+    selectionh5Div.appendChild(deleteButton);
+    selectionDiv.appendChild(selectionh5Div);
     selectionDiv.appendChild(selectioncontent);
     document.querySelector('#saved-selection').appendChild(selectionDiv);
 };
@@ -127,25 +156,29 @@ const appendElements = (selectionDiv, selectionh5, selectionh5Span, selectioncon
 const renderSelections = (res) => {
     const storageItems = JSON.parse(window.localStorage.getItem('savedSelections')) || [];
     if (res === 'one') {
-        const { selectionDiv, selectionh5, selectionh5Span, selectioncontent } = makeElements();
+        const { selectionDiv, selectionh5, selectionh5Span, selectioncontent, selectionButton, selectionh5Div, deleteButton } = makeElements(storageItems.length - 1);
 
         selectionh5.textContent = 'Selection '
+        selectionButton.textContent = 'Select list';
+        deleteButton.textContent = 'Delete list';
         selectionh5Span.textContent = `${storageItems.length}:`;
         const content = storageItems[storageItems.length - 1].map((object) => object.word);
         selectioncontent.textContent = content.join(', ');
 
-        appendElements(selectionDiv, selectionh5, selectionh5Span, selectioncontent);
+        appendElements(selectionDiv, selectionh5, selectionh5Span, selectioncontent, selectionButton, selectionh5Div, deleteButton);
     } else {
         for (let i = 0; i < storageItems.length; i++) {
 
-            const { selectionDiv, selectionh5, selectionh5Span, selectioncontent } = makeElements();
+            const { selectionDiv, selectionh5, selectionh5Span, selectioncontent, selectionButton, selectionh5Div, deleteButton } = makeElements(i);
             
             selectionh5.textContent = 'Selection '
+            selectionButton.textContent = 'Select list';
+            deleteButton.textContent = 'Delete list';
             selectionh5Span.textContent = `${i + 1}:`;
             const content = storageItems[i].map((object) => object.word);
             selectioncontent.textContent = content.join(', ');
 
-            appendElements(selectionDiv, selectionh5, selectionh5Span, selectioncontent);    
+            appendElements(selectionDiv, selectionh5, selectionh5Span, selectioncontent, selectionButton, selectionh5Div, deleteButton);    
         };
     };
 };
